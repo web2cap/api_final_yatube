@@ -6,7 +6,6 @@ from posts.models import Comment, Follow, Group, Post, User
 
 
 class FollowSerializer(serializers.ModelSerializer):
-    # achievement_name = serializers.CharField(source='name')
     following = serializers.StringRelatedField(read_only=True)
     user = serializers.StringRelatedField(read_only=True)
 
