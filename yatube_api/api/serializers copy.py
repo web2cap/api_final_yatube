@@ -1,26 +1,36 @@
-from rest_framework import serializers
+from rest_framework import serializers, status
 from rest_framework.relations import SlugRelatedField
+from rest_framework.response import Response
 
 from posts.models import Comment, Follow, Group, Post, User
 
 
 class FollowSerializer(serializers.ModelSerializer):
-    user = serializers.SlugRelatedField(read_only=True, slug_field="username")
+    # following = serializers.StringRelatedField(read_only=True)
+    # user = serializers.StringRelatedField(read_only=True)
+
     following = serializers.SlugRelatedField(
-        slug_field="username", queryset=User.objects.all()
+        read_only=True, slug_field="username"
     )
+    user = serializers.SlugRelatedField(read_only=True, slug_field="username")
+
+    def validate(self, data):
+        print("here")
+        for v in data:
+            print(f"{v}")
+        if "following" in data:
+            if data["following"] == data["user"]:
+                raise serializers.ValidationError(
+                    "Сам на себя не подпишешься!"
+                )
+            else:
+                return data
+        else:
+            raise serializers.ValidationError("Нет объекта для подписки")
 
     class Meta:
-        fields = ("user", "following")
         model = Follow
-
-    def validate_following(self, value):
-        user = self.context["request"].user
-        if value == user:
-            raise serializers.ValidationError("Подписка на самого себя.")
-        if Follow.objects.filter(following=value, user=user).exists():
-            raise serializers.ValidationError("Повторная подписка невозможна.")
-        return value
+        fields = ("user", "following")
 
 
 class PostSerializer(serializers.ModelSerializer):
