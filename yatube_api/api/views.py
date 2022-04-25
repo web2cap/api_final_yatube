@@ -1,11 +1,14 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import status, viewsets
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, status, viewsets
 from rest_framework.response import Response
 
 from posts.models import Comment, Follow, Group, Post, User
+from .pagination import PostPagination
 from .permissions import OwnerOrReadOnly, ReadOnly
 from .serializers import (
     CommentSerializer,
+    FollowSerializer,
     GroupSerializer,
     PostSerializer,
     UserSerializer,
@@ -17,10 +20,25 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = UserSerializer
 
 
+class FollowViewSet(viewsets.ReadOnlyModelViewSet):
+    # queryset = Follow.objects.all()
+    serializer_class = FollowSerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ("following__username",)
+
+    def get_queryset(self):
+        user = get_object_or_404(User, id=self.request.user.id)
+        return Follow.objects.filter(user=user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = (OwnerOrReadOnly,)
+    pagination_class = PostPagination
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
