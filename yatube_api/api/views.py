@@ -2,8 +2,6 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 
-# from rest_framework.permissions import AllowAny
-
 from posts.models import Comment, Follow, Group, Post, User
 from .permissions import OwnerOrReadOnly, ReadOnly
 from .serializers import (
@@ -28,11 +26,8 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
     def get_permissions(self):
-        # Если в GET-запросе требуется получить информацию об объекте
         if self.action == "retrieve":
-            # Вернем обновленный перечень используемых пермишенов
             return (ReadOnly(),)
-        # Для остальных ситуаций оставим текущий перечень пермишенов без изменений
         return super().get_permissions()
 
 
@@ -50,6 +45,11 @@ class GroupViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+    def get_permissions(self):
+        if self.action == "retrieve":
+            return (ReadOnly(),)
+        return super().get_permissions()
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
@@ -63,9 +63,6 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
     def get_permissions(self):
-        # Если в GET-запросе требуется получить информацию об объекте
         if self.action == "retrieve":
-            # Вернем обновленный перечень используемых пермишенов
             return (ReadOnly(),)
-        # Для остальных ситуаций оставим текущий перечень пермишенов без изменений
         return super().get_permissions()

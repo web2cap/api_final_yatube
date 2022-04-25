@@ -12,9 +12,12 @@ class Group(models.Model):
         unique=True,
     )
     description = models.TextField()
-    """author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="groups"
-    )"""
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
 
     def __str__(self) -> str:
         return self.title
