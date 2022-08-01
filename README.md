@@ -1,90 +1,98 @@
-# api_final_yatube
-## API для соц. сети авторов статей
+# API for Bloggers Social Network
+Built on Django Rest Framework
+ 
+The project allows you to view and publish author's articles, by category.
 
-##### Автор: Павел Кошелев 
+There is registration and authorization of users.
+
+An authorized user can leave reviews on articles and comments on reviews, subscribe to authors and manage their subscriptions.
+
+Bloggers Social Network https://github.com/web2cap/hw05_final/
 
 
-## Технологии:
+## Technology:
 
-- Python and Django
+-Python and Django
 - Rest Framework
 - JWTAuthentication and djoser
 
-## Установка
-- Клонируйте репозиторий
-- Создайте и активируйте виртуальное окружение
-- Установите все необходимые пакеты из requirements.txt.
-- Примените миграции
+## Installation
+- Clone the repository
+- Create and activate virtual environment
+- Install all required packages from requirements.txt.
+- Apply migrations
 
-## Документация
-Когда вы запустите проект, по адресу /redoc/ будет доступна документация для API Yatube. 
-В документации описано, как должен работать ваш API. 
-Документация представлена в формате Redoc.
+## Documentation
+When you launch the project, documentation for the Yatube API will be available at /redoc/.
+The documentation describes how your API should work.
+The documentation is in Redoc format.
 
 
-## Примеры запросов и ответов к API:
-| Ресурс | Тип | Путь | Передаваемые данные (JSON) |
+## Examples of API requests and responses:
+| Resource | Type | Path | Transferred data (JSON) |
 | ------ | ------ | ------ | ------ |
-| Получить API токен | POST | /api/v1/jwt/create/ | {"username":"","password":""}
+| Get an API token | POST | /api/v1/jwt/create/ | {"username":"","password":""}
 
-#### Ответ:
+#### Answer:
 ```
 {
-    "refresh": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-    "access": "eyeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    "refresh": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "access": "eyeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
 }
 ```
 
-| Ресурс | Тип | Путь |
-| ------ | ------ | ------ | 
-| Получить Список постов | GET | /api/v1/posts/ |
+| Resource | Type | Path |
+| ------ | ------ | ------ |
+| Get List of Posts | GET | /api/v1/posts/ |
 
-#### Ответ:
+#### Answer:
 ```
 [
     {
         "id": 1,
-        "text": "Вечером собрались в редакции «Русской мысли», чтобы поговорить о народном театре. Проект Шехтеля всем нравится.",
+        "text": "In the evening we gathered at the editorial office to talk about the theatre. Everyone likes the project.",
         "pub_date": "2022-04-21T11:22:03.167305Z",
         "author": "test",
-        "image": null,
-        "group": 1
+        "image": null
+        group: 1
     }
 ]
 ```
 
-| Ресурс | Тип | Путь | Передаваемые данные (JSON) |
+| Resource | Type | Path | Transferred data (JSON) |
 | ------ | ------ | ------ | ------ |
-| Добавить пост | POST | /api/v1/posts/ | {"text": "","group": ""} 
+| Add post | POST | /api/v1/posts/ | {"text": "","group": ""}
 
-#### Ответ:
+#### Answer:
 ```
 {
     "id": 14,
-    "text": "Вечером собрались в редакции «Русской мысли», чтобы поговорить о народном театре. Проект Шехтеля всем нравится.",
+    "text": ""In the evening we gathered at the editorial office to talk about the theatre. Everyone loves the project.
     "author": "anton",
-    "image": null,
-    "group": 1,
+    "image": null
+    group: 1
     "pub_date": "2021-06-01T08:47:11.084589Z"
-} 
+}
 ```
 http://localhost:8000/api/v1/follow/
 
 
-## Эндпоинты
-| Путь | Тип | Описание |
+## Endpoints
+| Path | Type | Description |
 | ------ | ------ | ------ |
-| api/v1/jwt/create/ | (POST) | передаём логин и пароль, получаем refresh, access токен |
-| api/v1/jwt/refresh/ | (POST) | передаём refresh токен, получаем access токен |
-| api/v1/jwt/verify/ | (POST) | передаём access токен, для валидации |
-| api/v1/posts/ | (GET, POST) | получаем список всех постов или создаём новый пост |
-| api/v1/posts/{post_id}/ | (GET, PUT, PATCH, DELETE) | получаем, редактируем или удаляем пост по id |
-| api/v1/groups/ | (GET) | получаем список всех групп |
-| api/v1/groups/{group_id}/ | (GET) | получаем информацию о группе по id |
-| api/v1/posts/{post_id}/comments/ | (GET, POST) | получаем список всех комментариев поста с id=post_id или создаём новый, указав id поста, который хотим прокомментировать |
-| api/v1/posts/{post_id}/comments/{comment_id}/ | (GET, PUT, PATCH, DELETE) | получаем, редактируем или удаляем комментарий по id у поста с id=post_id |
-| api/v1/follow/ | (GET) | возвращает все подписки пользователя, сделавшего запрос |
-| api/v1/follow/ | (POST) | подписка пользователя от имени которого сделан запрос на пользователя переданного в теле запроса |
+| api/v1/jwt/create/ | (POST) | pass login and password, get refresh, access token |
+| api/v1/jwt/refresh/ | (POST) | pass refresh token, get access token |
+| api/v1/jwt/verify/ | (POST) | pass access token for validation |
+| api/v1/posts/ | (GET, POST) | get a list of all posts or create a new post |
+| api/v1/posts/{post_id}/ | (GET, PUT, PATCH, DELETE) | getting, editing or deleting a post by id |
+| api/v1/groups/ | (GET) | get a list of all groups |
+| api/v1/groups/{group_id}/ | (GET) | get information about the group by id |
+| api/v1/posts/{post_id}/comments/ | (GET, POST) | get a list of all post comments with id=post_id or create a new one by specifying the id of the post we want to comment on |
+| api/v1/posts/{post_id}/comments/{comment_id}/ | (GET, PUT, PATCH, DELETE) | getting, editing or deleting a comment by id for a post with id=post_id |
+| api/v1/follow/ | (GET) | returns all subscriptions of the user who made the request |
+| api/v1/follow/ | (POST) | subscription of the user on behalf of which the request was made to the user passed in the body of the request |
 
 
-**Созданно при поддержке Яндекс.Практикум**
+### Author:
+
+Pavel Koshelev
