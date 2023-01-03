@@ -1,0 +1,49 @@
+version: '3.3'
+
+services:
+  yatube_db:
+    image: postgres:13.0-alpine
+    volumes:
+      - /var/lib/postgresql/data/
+    env_file:
+      - ./.env
+
+  yatube_api:
+    image: web2cap/yatube_api:latest
+    restart: always
+    volumes:
+      - static_value:/app/static/
+      - media_value:/app/media/
+    depends_on:
+      - yatube_db
+    env_file:
+      - ./.env
+
+  yatube_web:
+    image: web2cap/yatube_web:latest
+    restart: always
+    volumes:
+      - static_value:/app/static/
+      - media_value:/app/media/
+    depends_on:
+      - yatube_db
+    env_file:
+      - ./.env
+
+  yatube_nginx:
+    image: nginx:1.19.3
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ../frontend/build:/usr/share/nginx/html/
+      - ../docs/:/usr/share/nginx/html/api/docs/
+      - static_value:/var/html/static/
+      - media_value:/var/html/media/
+    depends_on:
+      - yatube_api
+      - yatube_web
+
+volumes:
+  static_value:
+  media_value:
