@@ -3,14 +3,16 @@ from datetime import timedelta
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = "hhz7l-ltdismtf@bzyz+rple7*s*w$jak%whj@(@u0eok^f9k4"
+SECRET_KEY = os.getenv(
+    "ST_SECRET_KEY",
+    default="p&l%385148kslhtyn^##a1)ilz@4zqj=rq&agdol^##zgl9(vs",
+)
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "yatube.w2c.net.eu.org"]
 
 INSTALLED_APPS = [
-    "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -58,8 +60,15 @@ WSGI_APPLICATION = "yatube_api.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+        "ENGINE": os.getenv(
+            "DB_ENGINE",
+            default="django.db.backends.postgresql",
+        ),
+        "NAME": os.getenv("DB_NAME", default="yatube"),
+        "USER": os.getenv("DB_USER", default="yatube"),
+        "PASSWORD": os.getenv("DB_PASSWORD", default="yatube"),
+        "HOST": os.getenv("DB_HOST", default="localhost"),
+        "PORT": os.getenv("DB_PORT", default="5432"),
     }
 }
 
