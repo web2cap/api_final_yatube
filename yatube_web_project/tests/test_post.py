@@ -25,19 +25,19 @@ class TestPostView:
 
         page_context = get_field_from_context(response.context, Page)
         assert page_context is not None, (
-            'Проверьте, что передали статьи автора в контекст главной страницы `/` типа `Page`'
+            'Check what you transferred to the author’s articles to the context of the main page `/` like `page` '
         )
         assert len(page_context.object_list) == 1, (
-            'Проверьте, что в контекст главной страницы переданы правильные статьи автора'
+            'Check that the author’s correct articles are transferred to the context of the main page '
         )
         posts_list = page_context.object_list
         for post in posts_list:
             assert hasattr(post, 'image'), (
-                'Убедитесь, что статья, передаваемая в контекст главной страницы `/`, имеет поле `image`'
+                'Make sure that the article transmitted to the context of the main page `/` has a field `Image` '
             )
             assert getattr(post, 'image') is not None, (
-                'Убедитесь, что статья, передаваемая в контекст главной страницы `/`, имеет поле `image`, '
-                'и туда передается изображение'
+                'Make sure that the article transmitted to the context of the main page `/` has a field `Image`, '
+                'And the image is transmitted there '
             )
 
     @pytest.mark.django_db(transaction=True)
@@ -48,22 +48,22 @@ class TestPostView:
 
         page_context = get_field_from_context(response.context, Page)
         assert page_context is not None, (
-            'Проверьте, что передали статьи автора в контекст главной страницы `/` типа `Page`'
+            'Check what you transferred to the author’s articles to the context of the main page `/` like `page` '
         )
         posts_cnt = Post.objects.count()
         post.delete()
         assert len(page_context.object_list) == posts_cnt is not None, (
-            'Проверьте, что настроили кэширование для главной страницы `/` '
-            'и посты на ней даже при удалении в базе, остаются до очистки кэша'
+            'Check what you set up caching for the main page `/` '
+            'and posts on it even when removing in the database, remain until the cache is cleaned '
         )
         cache.clear()
         posts_cnt = Post.objects.count()
         response = client.get(url_index)
         page_context = get_field_from_context(response.context, Page)
         assert len(page_context.object_list) == posts_cnt is not None, (
-            'Проверьте, что настроили кэширование для главной страницы `/` '
-            'и при принудительной очистке кэша, удаленный в базе пост, '
-            'пропадает из кэша'
+            'Check what you set up caching for the main page `/` '
+            'And with a forced cleaning of the cache, a post remote in the database, '
+            'disappears from the cache '
         )
 
     @pytest.mark.django_db(transaction=True)
@@ -71,43 +71,43 @@ class TestPostView:
         try:
             response = client.get(f'/posts/{post_with_group.id}')
         except Exception as e:
-            assert False, f'''Страница `/posts/<post_id>/` работает неправильно. Ошибка: `{e}`'''
+            assert False, f'''The `/posts/<Post_id>/` page works incorrectly.Mistake: `{e}`'''
         if response.status_code in (301, 302):
             response = client.get(f'/posts/{post_with_group.id}/')
         assert response.status_code != 404, (
-            'Страница `/posts/<post_id>/` не найдена, проверьте этот адрес в *urls.py*'
+            'Page `/Posts/<Post_id>/` Not found, check this address in *urls.py *'
         )
 
         post_context = get_field_from_context(response.context, Post)
         assert post_context is not None, (
-            'Проверьте, что передали статью в контекст страницы `/posts/<post_id>/` типа `Post`'
+            'Check what you transferred to the article to the context of the `/posts/<Post_ID>/` type `post` page'
         )
 
         try:
             from posts.forms import CommentForm
         except ImportError:
-            assert False, 'Не найдена форма CommentForm в posts.form'
+            assert False, 'No CommentForm form in Posts.Form '
 
         comment_form_context = get_field_from_context(response.context, CommentForm)
         assert comment_form_context is not None, (
-            'Проверьте, что передали форму комментария в контекст страницы `/posts/<post_id>/` типа `CommentForm`'
+            'Check that they conveyed the form of comment to the context of the page `/posts/<Post_id>/` like `commentForm` '
         )
         assert len(comment_form_context.fields) == 1, (
-            'Проверьте, что форма комментария в контексте страницы `/posts/<post_id>/` состоит из одного поля'
+            'Check that the form of commentary in the context of the page `/posts/<Post_id>/` consists of one field '
         )
         assert 'text' in comment_form_context.fields, (
-            'Проверьте, что форма комментария в контексте страницы `/posts/<post_id>/` содержится поле `text`'
+            'Check that the form of commentary in the context of the page `/posts/<Post_id>/` contains the `Text` field'
         )
         assert type(comment_form_context.fields['text']) == forms.fields.CharField, (
-            'Проверьте, что форма комментария в контексте страницы `/posts/<post_id>/` '
-            'содержится поле `text` типа `CharField`'
+            'Check that the form of commentary in the context of the page `/posts/<Post_id>/` '
+            'Contained `Text` type` charfield` '
         )
         assert hasattr(post_context, 'image'), (
-            'Убедитесь, что статья, передаваемая в контекст страницы `/posts/<post_id>/`, имеет поле `image`'
+            'Make sure that the article transmitted to the context of the page `/posts/<Post_id>/` has a field `Image` '
         )
         assert getattr(post_context, 'image') is not None, (
-            'Убедитесь, что статья, передаваемая в контекст страницы `/posts/<post_id>/`, имеет поле `image`, '
-            'и туда передается изображение'
+            'Make sure that the article transmitted to the context of the page `/posts/<Post_id>/` has a field `Image`, '
+            'And the image is transmitted there '
         )
 
 
@@ -142,47 +142,47 @@ class TestPostEditView:
         if response.status_code in (301, 302):
             response = user_client.get(f'/posts/{post_with_group.id}/edit/')
         assert response.status_code != 404, (
-            'Страница `/posts/<post_id>/edit/` не найдена, проверьте этот адрес в *urls.py*'
+            'Page `/Posts/<Post_id>/edit/` Not found, check this address in *urls.py *'
         )
 
         post_context = get_field_from_context(response.context, Post)
         postform_context = get_field_from_context(response.context, PostForm)
         assert any([post_context, postform_context]) is not None, (
-            'Проверьте, что передали статью в контекст страницы `/posts/<post_id>/edit/` типа `Post` или `PostForm`'
+            'Check what you handed over to the context of the page `/posts/<Post_ID>/edit/` like `post` or` postform` '
         )
 
         assert 'form' in response.context, (
-            'Проверьте, что передали форму `form` в контекст страницы `/posts/<post_id>/edit/`'
+            'Check that they conveyed the form `Form` to the context of the page`/posts/<Post_id>/edit/`'
         )
         fields_cnt = 3
         assert len(response.context['form'].fields) == fields_cnt, (
-            f'Проверьте, что в форме `form` на страницу `/posts/<post_id>/edit/` {fields_cnt} поля'
+            f'Check that in the form of `Form` on the page`/posts/<Post_id>/edit/`{Fields_cnt} Fields'
         )
         assert 'group' in response.context['form'].fields, (
-            'Проверьте, что в форме `form` на странице `/posts/<post_id>/edit/` есть поле `group`'
+            'Check that in the form of `Form` on the`/Posts/<Post_ID>/edit/`there is a field` Group` '
         )
         assert type(response.context['form'].fields['group']) == forms.models.ModelChoiceField, (
-            'Проверьте, что в форме `form` на странице `/posts/<post_id>/edit/` поле `group` типа `ModelChoiceField`'
+            'Check that in the form of `Form` on the`/Posts/<Post_ID>/edit/`field` Group` type `modelchoicefield` '
         )
         assert not response.context['form'].fields['group'].required, (
-            'Проверьте, что в форме `form` на странице `/posts/<post_id>/edit/` поле `group` не обязательно'
+            'Check that in the form of `Form` on the page`/posts/<Post_id>/edit/`` Group` field is not necessarily '
         )
 
         assert 'text' in response.context['form'].fields, (
-            'Проверьте, что в форме `form` на странице `/posts/<post_id>/edit/` есть поле `text`'
+            'Check that in the form of `Form` on the`/Posts/<Post_ID>/edit/`there is a field` text` '
         )
         assert type(response.context['form'].fields['text']) == forms.fields.CharField, (
-            'Проверьте, что в форме `form` на странице `/posts/<post_id>/edit/` поле `text` типа `CharField`'
+            'Check that in the form of `Form` on the`/Posts/<Post_ID>/edit/`field` text` type `charfield` '
         )
         assert response.context['form'].fields['text'].required, (
-            'Проверьте, что в форме `form` на странице `/posts/<post_id>/edit/` поле `group` обязательно'
+            'Check that in the form of `Form` on the page`/posts/<Post_ID>/edit/`Field` Group`'
         )
 
         assert 'image' in response.context['form'].fields, (
-            'Проверьте, что в форме `form` на странице `/posts/<post_id>/edit/` есть поле `image`'
+            'Check that in the form of `Form` on the`/Posts/<Post_ID>/edit/`there is a field` Image` '
         )
         assert type(response.context['form'].fields['image']) == forms.fields.ImageField, (
-            'Проверьте, что в форме `form` на странице `/posts/<post_id>/edit/` поле `image` типа `ImageField`'
+            'Check that in the form of `Form` on the`/Posts/<Post_ID>/edit/`` Image` type `imagefield` '
         )
 
     @staticmethod
@@ -195,11 +195,11 @@ class TestPostEditView:
 
     @pytest.mark.django_db(transaction=True)
     def test_post_edit_view_author_post(self, mock_media, user_client, post_with_group):
-        text = 'Проверка изменения поста!'
+        text = 'Checking the post!'
         try:
             response = user_client.get(f'/posts/{post_with_group.id}/edit')
         except Exception as e:
-            assert False, f'''Страница `/posts/<post_id>/edit/` работает неправильно. Ошибка: `{e}`'''
+            assert False, f'''The `/posts/<Post_ID>/edit/` page works incorrectly.Mistake: `{e}`'''
         url = (
             f'/posts/{post_with_group.id}/edit/'
             if response.status_code in (301, 302)
@@ -210,13 +210,13 @@ class TestPostEditView:
         response = user_client.post(url, data={'text': text, 'group': post_with_group.group_id, 'image': image})
 
         assert response.status_code in (301, 302), (
-            'Проверьте, что со страницы `/posts/<post_id>/edit/` '
-            'после создания поста перенаправляете на страницу поста'
+            'Check what from the page `/posts/<Post_id>/edit/` '
+            'After creating the post, redirect the post page '
         )
         post = Post.objects.filter(author=post_with_group.author, text=text, group=post_with_group.group).first()
         assert post is not None, (
-            'Проверьте, что вы изменили пост при отправки формы на странице `/posts/<post_id>/edit/`'
+            'Check that you have changed the post when sending a form on the `/posts/<Post_ID>/edit/` page'
         )
         assert response.url.startswith(f'/posts/{post_with_group.id}'), (
-            'Проверьте, что перенаправляете на страницу поста `/posts/<post_id>/`'
+            'Check what you redirect to the page `/posts/<Post_id>/` '
         )

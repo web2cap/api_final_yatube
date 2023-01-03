@@ -20,18 +20,18 @@ def mixer():
 @pytest.fixture
 def post(user):
     image = tempfile.NamedTemporaryFile(suffix=".jpg").name
-    return Post.objects.create(text='Тестовый пост 1', author=user, image=image)
+    return Post.objects.create(text='Test post 1', author=user, image=image)
 
 
 @pytest.fixture
 def group():
-    return Group.objects.create(title='Тестовая группа 1', slug='test-link', description='Тестовое описание группы')
+    return Group.objects.create(title='Test group 1', slug='test-link', description='Test description of the group')
 
 
 @pytest.fixture
 def post_with_group(user, group):
     image = tempfile.NamedTemporaryFile(suffix=".jpg").name
-    return Post.objects.create(text='Тестовый пост 2', author=user, group=group, image=image)
+    return Post.objects.create(text='Test post 2', author=user, group=group, image=image)
 
 
 @pytest.fixture

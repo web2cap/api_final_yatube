@@ -13,12 +13,12 @@ from tests.utils import get_field_from_context
 try:
     from posts.models import Post
 except ImportError:
-    assert False, 'Не найдена модель Post'
+    assert False, 'No model was found Post'
 
 try:
     from posts.models import Group
 except ImportError:
-    assert False, 'Не найдена модель Group'
+    assert False, 'No model was found Group'
 
 
 def search_field(fields, attname):
@@ -29,7 +29,7 @@ def search_field(fields, attname):
 
 
 def search_refind(execution, user_code):
-    """Поиск запуска"""
+    """Search for launch"""
     for temp_line in user_code.split('\n'):
         if re.search(execution, temp_line):
             return True
@@ -41,9 +41,9 @@ class TestPost:
     def test_post_model(self):
         model_fields = Post._meta.fields
         text_field = search_field(model_fields, 'text')
-        assert text_field is not None, 'Добавьте название события `text` модели `Post`'
+        assert text_field is not None, 'Add the name of the event `text` model` post`'
         assert type(text_field) == fields.TextField, (
-            'Свойство `text` модели `Post` должно быть текстовым `TextField`'
+            'Property `Text` Models` Post` should be textual `Textfield`'
         )
 
         pub_date_field_name = 'created'
@@ -56,51 +56,51 @@ class TestPost:
                 pub_date_field_name = 'created'
 
         assert pub_date_field is not None, (
-            f'Добавьте дату и время проведения события в `{pub_date_field_name}` модели `Post`'
+            f'Add the date and time of the event in `{pub_date_field_name}` patterns `Post`'
         )
         assert type(pub_date_field) == fields.DateTimeField, (
-            f'Свойство `{pub_date_field_name}` модели `Post` должно быть датой и временем `DateTimeField`'
+            f'Property `{pub_date_field_name}` Models `post` should be a date and time `DateTimeField`'
         )
         assert pub_date_field.auto_now_add, (
-            f'Свойство `pub_date` или `created` модели `Post` должно быть `auto_now_add`'
+            f'Property `pub_date` or `created` - `Post` It must be `auto_now_add`'
         )
 
         author_field = search_field(model_fields, 'author_id')
-        assert author_field is not None, 'Добавьте пользователя, автор который создал событие `author` модели `Post`'
+        assert author_field is not None, 'Add a user, the author who created the event `Author` Model` Post`'
         assert type(author_field) == fields.related.ForeignKey, (
-            'Свойство `author` модели `Post` должно быть ссылкой на другую модель `ForeignKey`'
+            'Property `author` Models `Post` should be a link to another model` Foreignkey`'
         )
         assert author_field.related_model == get_user_model(), (
-            'Свойство `author` модели `Post` должно быть ссылкой на модель пользователя `User`'
+            'Property `author` Models `Post` should be a link to the users model` user`'
         )
 
         group_field = search_field(model_fields, 'group_id')
-        assert group_field is not None, 'Добавьте свойство `group` в модель `Post`'
+        assert group_field is not None, 'Add the `Group` property to the` post` model'
         assert type(group_field) == fields.related.ForeignKey, (
-            'Свойство `group` модели `Post` должно быть ссылкой на другую модель `ForeignKey`'
+            'Property `group`Models `Post` should be a link to another model` Foreignkey`'
         )
         assert group_field.related_model == Group, (
-            'Свойство `group` модели `Post` должно быть ссылкой на модель `Group`'
+            'Property `group` Models `Post` should be a link to the` Group` model'
         )
         assert group_field.blank, (
-            'Свойство `group` модели `Post` должно быть с атрибутом `blank=True`'
+            'Property `group` Models `Post` should be with the attribute` Blank = True`'
         )
         assert group_field.null, (
-            'Свойство `group` модели `Post` должно быть с атрибутом `null=True`'
+            'Property `group` Models `post` should be with the attribute` null = true`'
         )
 
         image_field = search_field(model_fields, 'image')
-        assert image_field is not None, 'Добавьте свойство `image` в модель `Post`'
+        assert image_field is not None, 'Add the `iMage` property to the` post` model'
         assert type(image_field) == fields.files.ImageField, (
-            'Свойство `image` модели `Post` должно быть `ImageField`'
+            'Property `image` Models `Post` should be` Imagefield`'
         )
         assert image_field.upload_to == 'posts/', (
-            "Свойство `image` модели `Post` должно быть с атрибутом `upload_to='posts/'`"
+            "Property `image` Models `Post` should be with the attribute` upload_to = 'Posts/' `"
         )
 
     @pytest.mark.django_db(transaction=True)
     def test_post_create(self, user):
-        text = 'Тестовый пост'
+        text = 'Test post'
         author = user
 
         assert Post.objects.count() == 0
@@ -113,34 +113,34 @@ class TestPost:
     def test_post_admin(self):
         admin_site = site
 
-        assert Post in admin_site._registry, 'Зарегистрируйте модель `Post` в админской панели'
+        assert Post in admin_site._registry, 'Register `Post` in the admin panel '
 
         admin_model = admin_site._registry[Post]
 
         assert 'text' in admin_model.list_display, (
-            'Добавьте `text` для отображения в списке модели административного сайта'
+            'Add `text` to display in the list of a model of an administrative site '
         )
 
         assert 'pub_date' in admin_model.list_display or 'created' in admin_model.list_display, (
-            f'Добавьте `pub_date` или `created` для отображения в списке модели административного сайта'
+            f'Add `Pub_Date` or` CREATED` to display in the list of a model of an administrative site '
         )
         assert 'author' in admin_model.list_display, (
-            'Добавьте `author` для отображения в списке модели административного сайта'
+            'Add `author` to display in the list of a model of an administrative site '
         )
 
         assert 'text' in admin_model.search_fields, (
-            'Добавьте `text` для поиска модели административного сайта'
+            'Add `text` to search for a model of an administrative site '
         )
 
         assert 'pub_date' in admin_model.list_filter or 'created' in admin_model.list_filter, (
-            f'Добавьте `pub_date` или `created` для фильтрации модели административного сайта'
+            f'Add `Pub_Date` or` CREATED` to filter the administrative site model '
         )
 
         assert hasattr(admin_model, 'empty_value_display'), (
-            'Добавьте дефолтное значение `-пусто-` для пустого поля'
+            'Add the default value `-empty-` for an empty field '
         )
-        assert admin_model.empty_value_display == '-пусто-', (
-            'Добавьте дефолтное значение `-пусто-` для пустого поля'
+        assert admin_model.empty_value_display == '-empty-', (
+            'Add the default value `-empty-` for an empty field '
         )
 
 
@@ -149,28 +149,28 @@ class TestGroup:
     def test_group_model(self):
         model_fields = Group._meta.fields
         title_field = search_field(model_fields, 'title')
-        assert title_field is not None, 'Добавьте название события `title` модели `Group`'
+        assert title_field is not None, 'Add the name of the event `Title` Model` Group` '
         assert type(title_field) == fields.CharField, (
-            'Свойство `title` модели `Group` должно быть символьным `CharField`'
+            'Property `title` Models `Group` should be sympathetic` charfield` '
         )
-        assert title_field.max_length == 200, 'Задайте максимальную длину `title` модели `Group` 200'
+        assert title_field.max_length == 200, 'Ask the maximum length of the `title` model` Group` 200 '
 
         slug_field = search_field(model_fields, 'slug')
-        assert slug_field is not None, 'Добавьте уникальный адрес группы `slug` модели `Group`'
+        assert slug_field is not None, 'Add the unique address of the `Slug` model` Group` '
         assert type(slug_field) == fields.SlugField, (
-            'Свойство `slug` модели `Group` должно быть `SlugField`'
+            'Property `slug` Models `Group` should be` slugfield` '
         )
-        assert slug_field.unique, 'Свойство `slug` модели `Group` должно быть уникальным'
+        assert slug_field.unique, 'Property `slug` Models `Group` should be unique '
 
         description_field = search_field(model_fields, 'description')
-        assert description_field is not None, 'Добавьте описание `description` модели `Group`'
+        assert description_field is not None, 'Add a description of `description` Model` Group` '
         assert type(description_field) == fields.TextField, (
-            'Свойство `description` модели `Group` должно быть текстовым `TextField`'
+            'Property `description` Models `Group` should be textual` TextField` '
         )
 
     @pytest.mark.django_db(transaction=True)
     def test_group_create(self, user):
-        text = 'Тестовый пост'
+        text = 'Test post'
         author = user
 
         assert Post.objects.count() == 0
@@ -179,9 +179,9 @@ class TestGroup:
         assert Post.objects.count() == 1
         assert Post.objects.get(text=text, author=author).pk == post.pk
 
-        title = 'Тестовая группа'
+        title = 'Test group'
         slug = 'test-link'
-        description = 'Тестовое описание группы'
+        description = 'Test description of the group'
 
         assert Group.objects.count() == 0
         group = Group.objects.create(title=title, slug=slug, description=description)
@@ -202,30 +202,30 @@ class TestGroupView:
         try:
             response = client.get(url)
         except Exception as e:
-            assert False, f'''Страница `{url_templ}` работает неправильно. Ошибка: `{e}`'''
+            assert False, f'''Page `{url_templ}` It works incorrectly.Mistake: `{e}`'''
         if response.status_code in (301, 302):
             response = client.get(f'{url}/')
         if response.status_code == 404:
-            assert False, f'Страница `{url_templ}` не найдена, проверьте этот адрес в *urls.py*'
+            assert False, f'Page `{url_templ}` Not found, check this address in *urls.py*'
 
         if response.status_code != 200:
-            assert False, f'Страница `{url_templ}` работает неправильно.'
+            assert False, f'Page `{url_templ}` It works incorrectly.'
 
         page_context = get_field_from_context(response.context, Page)
         assert page_context is not None, (
-            f'Проверьте, что передали статьи автора в контекст страницы `{url_templ}` типа `Page`'
+            f'Check what you transferred to the author’s articles to the context of the page `{url_templ}` type `Page`'
         )
         assert len(page_context.object_list) == 1, (
-            f'Проверьте, что в контекст страницы переданы правильные статьи автора `{url_templ}`'
+            f'Check that the author’s correct articles are transferred to the context of the page `{url_templ}`'
         )
         posts_list = page_context.object_list
         for post in posts_list:
             assert hasattr(post, 'image'), (
-                f'Убедитесь, что статья, передаваемая в контекст страницы `{url_templ}`, имеет поле `image`'
+                f'Make sure the article transmitted to the context of the page `{url_templ}`, It has a field `Image`'
             )
             assert getattr(post, 'image') is not None, (
-                f'Убедитесь, что статья, передаваемая в контекст страницы `{url_templ}`, имеет поле `image`, '
-                'и туда передается изображение'
+                f'Make sure the article transmitted to the context of the page `{url_templ}`, It has a field `Image` ' 
+                'And the image is transmitted there'
             )
 
         group = post_with_group.group
@@ -235,23 +235,23 @@ class TestGroupView:
         html_template = select_template(templates_list).template.source
 
         assert search_refind(r'{%\s*for\s+.+in.*%}', html_template), (
-            'Отредактируйте HTML-шаблон, используйте тег цикла'
+            'Edit the HTML-header, use the cycle tag'
         )
         assert search_refind(r'{%\s*endfor\s*%}', html_template), (
-            'Отредактируйте HTML-шаблон, не найден тег закрытия цикла'
+            'Edit the HTML-header, the closing tag of the cycle has not been found'
         )
 
         assert re.search(
             group.title,
             html
         ), (
-            'Отредактируйте HTML-шаблон, не найден заголовок группы '
-            '`{% block header %}{{ название_группы }}{% endblock %}`'
+            'Edit the HTML-header, the title of the group '
+            '`{% block header %}{{ The name of the_group }}{% endblock %}`'
         )
         assert re.search(
             r'<\s*p\s*>\s*' + group.description + r'\s*<\s*\/p\s*>',
             html
-        ), 'Отредактируйте HTML-шаблон, не найдено описание группы `<p>{{ описание_группы }}</p>`'
+        ), 'Edit the HTML-shaped, no description of the group `<p>{{ Description of the_group }}</p>`'
 
 
 class TestCustomErrorPages:
@@ -263,15 +263,15 @@ class TestCustomErrorPages:
         response = client.get(url_invalid)
 
         assert response.status_code == code, (
-            f'Убедитесь, что для несуществующих адресов страниц, сервер возвращает код {code}'
+            f'Make sure that for non -existent page addresses, the server returns the code {code}'
         )
 
         try:
             from yatube.urls import handler404 as handler404_student
         except ImportError:
             assert False, (
-                f'Убедитесь, что для страниц, возвращающих код {code}, '
-                'настроен кастомный шаблон'
+                f'Make sure for pages returning the code {code}, '
+                'The custom template is configured'
             )
 
     @pytest.mark.django_db(transaction=True)
@@ -282,8 +282,8 @@ class TestCustomErrorPages:
             from yatube.urls import handler500
         except ImportError:
             assert False, (
-                f'Убедитесь, что для страниц, возвращающих код {code}, '
-                'настроен кастомный шаблон'
+                f'Make sure for pages returning the code {code}, '
+                'The custom template is configured'
             )
 
     @pytest.mark.django_db(transaction=True)
@@ -294,6 +294,6 @@ class TestCustomErrorPages:
             from yatube.urls import handler403
         except ImportError:
             assert False, (
-                f'Убедитесь, что для страниц, возвращающих код {code}, '
-                'настроен кастомный шаблон'
+                f'Make sure for pages returning the code {code}, '
+                'The custom template is configured'
             )
