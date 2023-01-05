@@ -1,25 +1,32 @@
+import sys
 import os
+
+
+root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(root_dir)
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 root_dir_content = os.listdir(BASE_DIR)
-MAIN_APP_NAME = 'yatube'
+PROJECT_DIR_NAME = 'yatube_project'
 if (
-        MAIN_APP_NAME not in root_dir_content
-        or not os.path.isdir(BASE_DIR)
+        PROJECT_DIR_NAME not in root_dir_content
+        or not os.path.isdir(os.path.join(BASE_DIR, PROJECT_DIR_NAME))
 ):
     assert False, (
         f'In the directory`{BASE_DIR}` not found main app dir `{MAIN_APP_NAME}`. '
         f'Make sure you have the right project structure.'
     )
 
-project_dir_content = os.listdir(BASE_DIR)
+MANAGE_PATH = os.path.join(BASE_DIR, PROJECT_DIR_NAME)
+project_dir_content = os.listdir(MANAGE_PATH)
 FILENAME = 'manage.py'
-# проверяем, что структура проекта верная, и manage.py на месте
+
 if FILENAME not in project_dir_content:
     assert False, (
         f'In the directory`{BASE_DIR}` not a top file `{FILENAME}`. '
         f'Make sure you have the right project structure.'
     )
+
 
 from django.utils.version import get_version
 

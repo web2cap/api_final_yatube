@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -14,10 +15,10 @@ ALLOWED_HOSTS = ["localhost", "yatube.w2c.net.eu.org"]
 
 
 INSTALLED_APPS = [
-    "posts.apps.PostsConfig",
-    "users.apps.UsersConfig",
-    "about.apps.AboutConfig",
-    "core.apps.CoreConfig",
+    # "posts.apps.PostsConfig",
+    # "users.apps.UsersConfig",
+    # "about.apps.AboutConfig",
+    # "core.apps.CoreConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -25,6 +26,14 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "sorl.thumbnail",
+    "rest_framework",
+    "djoser",
+    "django_filters",
+    "api",
+    "posts",
+    "users",
+    "about",
+    "core",
 ]
 
 MIDDLEWARE = [
@@ -126,3 +135,26 @@ POST_PER_PAGE = 10
 
 COMMENT_MIN_LEN = 1
 CSRF_FAILURE_VIEW = "core.views.csrf_failure"
+
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    "AUTH_HEADER_TYPES": ("Bearer",),
+}
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_URLS_REGEX = r"^/api/.*$"
+
+SWAGGER_SETTINGS = {
+    "SECURITY_DEFINITIONS": {
+        "Bearer": {"type": "apiKey", "name": "Authorization", "in": "header"}
+    }
+}
