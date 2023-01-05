@@ -4,9 +4,9 @@ from .models import Comment, Follow, Group, Post
 
 
 class PostAdmin(admin.ModelAdmin):
-    list_display = ("pk", "text", "created", "author", "group")
+    list_display = ("pk", "text", "pub_date", "author", "group")
     search_fields = ("text",)
-    list_filter = ("created",)
+    list_filter = ("pub_date",)
     list_editable = ("group",)
     empty_value_display = "-empty-"
 

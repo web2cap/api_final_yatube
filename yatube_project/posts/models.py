@@ -52,10 +52,10 @@ class Post(CreatedModel):
         verbose_name="Group",
         help_text="Choose a group",
     )
-    image = models.ImageField("Picture", upload_to="posts/", blank=True)
+    image = models.ImageField("Picture", upload_to="posts/", blank=True, null=True)
 
     class Meta:
-        ordering = ("-created",)
+        ordering = ("-pub_date",)
         verbose_name = "Post"
         verbose_name_plural = "Posts"
 
@@ -63,7 +63,7 @@ class Post(CreatedModel):
         return self.text[:15]
 
 
-class Comment(CreatedModel):
+class Comment(models.Model):
     post = models.ForeignKey(
         Post,
         on_delete=models.CASCADE,
@@ -78,6 +78,9 @@ class Comment(CreatedModel):
     )
     text = models.TextField(
         verbose_name="The text of the comment", help_text="Enter the text of the comment"
+    )
+    created = models.DateTimeField(
+        "date of creation", auto_now_add=True, db_index=True
     )
 
     class Meta:

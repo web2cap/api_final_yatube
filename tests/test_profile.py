@@ -18,7 +18,7 @@ class TestProfileView:
         if response.status_code in (301, 302):
             response = client.get(f'{url}/')
         assert response.status_code != 404, (
-            f'Page `{url_TEMPL}` not found, check this address in *urls.py *'
+            f'Page `{url_templ}` not found, check this address in *urls.py *'
         )
 
         profile_context = get_field_from_context(response.context, get_user_model())

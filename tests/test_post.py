@@ -156,7 +156,7 @@ class TestPostEditView:
         )
         fields_cnt = 3
         assert len(response.context['form'].fields) == fields_cnt, (
-            f'Check that in the form of `Form` on the page`/posts/<Post_id>/edit/`{Fields_cnt} Fields'
+            f'Check that in the form of `Form` on the page`/posts/<Post_id>/edit/`{fields_cnt} Fields'
         )
         assert 'group' in response.context['form'].fields, (
             'Check that in the form of `Form` on the`/Posts/<Post_ID>/edit/`there is a field` Group` '
