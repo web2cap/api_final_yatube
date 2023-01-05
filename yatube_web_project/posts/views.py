@@ -7,7 +7,7 @@ from .models import Follow, Group, Post, User
 from .utils import paginations
 
 
-@cache_page(60 * 20)
+@cache_page(1)
 def index(request):
     """Post_per_Page output of the POST model,
     sorted by the CREATED field in descending,
@@ -47,7 +47,7 @@ def profile(request, username):
     page_obj = paginations(request, post_list)
     following = False
     if request.user.is_authenticated and request.user != author:
-        if Follow.objects.filter(user=request.user, author=author).exists():
+        if Follow.objects.filter(user=request.user, following=author).exists():
             following = "can_unfollow"
         else:
             following = "can_follow"
@@ -138,7 +138,7 @@ def follow_index(request):
 
     user = get_object_or_404(User, username=request.user)
 
-    followed_people = Follow.objects.filter(user=user).values("author")
+    followed_people = Follow.objects.filter(user=user).values("following")
     post_list = Post.objects.filter(author__in=followed_people)
     page_obj = paginations(request, post_list)
 
@@ -155,7 +155,7 @@ def profile_follow(request, username):
 
     author = get_object_or_404(User, username=username)
     if request.user != author:
-        Follow.objects.get_or_create(user=request.user, author=author)
+        Follow.objects.get_or_create(user=request.user, following=author)
 
     return redirect("posts:profile", username)
 
@@ -165,6 +165,6 @@ def profile_unfollow(request, username):
     """The author's recome."""
 
     author = get_object_or_404(User, username=username)
-    Follow.objects.filter(user=request.user, author=author).delete()
+    Follow.objects.filter(user=request.user, following=author).delete()
 
     return redirect("posts:profile", username)

@@ -19,7 +19,12 @@ class Group(models.Model):
     description = models.TextField(
         verbose_name="Description", help_text="Enter the description of the group"
     )
-
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
     class Meta:
         verbose_name = "Group"
         verbose_name_plural = "Groups"
@@ -91,10 +96,10 @@ class Follow(models.Model):
         related_name="follower",
         verbose_name="Follower",
     )
-    author = models.ForeignKey(
+    following = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name="following",
+        related_name="following_author",
         verbose_name="Author",
     )
 
@@ -103,7 +108,7 @@ class Follow(models.Model):
         verbose_name_plural = "Subscriptions"
         constraints = [
             models.UniqueConstraint(
-                fields=["user", "author"], name="unique_follow"
+                fields=["user", "following"], name="unique_follow"
             )
         ]
 
