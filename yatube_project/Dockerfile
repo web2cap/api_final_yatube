@@ -1,6 +1,7 @@
-FROM python:3.10-slim
+FROM python:3.7-slim
+
 WORKDIR /app
-COPY ./ .
+COPY yatube_project/ .
 RUN pip3 install -r requirements.txt --no-cache-dir
 
 
