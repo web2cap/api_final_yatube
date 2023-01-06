@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+
 from core.models import CreatedModel
 
 User = get_user_model()
@@ -26,7 +27,7 @@ class Group(models.Model):
         blank=True,
         null=True,
     )
-    
+
     class Meta:
         verbose_name = "Group"
         verbose_name_plural = "Groups"
