@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block title %}Вы вышли из системы{% endblock %}
+{% block content %}
+  {% with card_header='Logged out' card_body='You logged out from your account. We are waiting for you again!' %}
+    {% include 'users/includes/card.html' %} 
+  {% endwith %}
+{% endblock %}

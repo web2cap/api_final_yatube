@@ -1,183 +1,147 @@
+import re
+
 import pytest
+from django.contrib.auth import get_user_model
+from django.db.models import fields
 
-from posts.models import Comment
+try:
+    from posts.models import Comment
+except ImportError:
+    assert False, "Not found model Comment "
+
+try:
+    from posts.models import Post
+except ImportError:
+    assert False, "Not found model post "
 
 
-class TestCommentAPI:
+def search_field(fields, attname):
+    for field in fields:
+        if attname == field.attname:
+            return field
+    return None
 
-    @pytest.mark.django_db(transaction=True)
-    def test_comments_not_authenticated(self, client, post):
-        response = client.get(f'/api/v1/posts/{post.id}/comments/')
 
-        code = 200
-        assert response.status_code == code, (
-            'Анонимный пользователь при запросе `/api/v1/posts/{post.id}/comments/` '
-            f'должен получать ответ с кодом {code}'
-        )
+def search_refind(execution, user_code):
+    """searchForLaunch"""
+    for temp_line in user_code.split("\n"):
+        if re.search(execution, temp_line):
+            return True
+    return False
 
-    @pytest.mark.django_db(transaction=True)
-    def test_comment_single_not_authenticated(self, client, post, comment_1_post):
-        response = client.get(f'/api/v1/posts/{post.id}/comments/{comment_1_post.id}/')
 
-        code = 200
-        assert response.status_code == code, (
-            'Анонимный пользователь при запросе `/api/v1/posts/{post.id}/comments/{comment.id}` '
-            f'должен получать ответ с кодом {code}'
-        )
+class TestComment:
+    def test_comment_model(self):
+        model_fields = Comment._meta.fields
+        text_field = search_field(model_fields, "text")
+        assert (
+            text_field is not None
+        ), "Add the name of the event `Text` Model` Comment` "
+        assert (
+            type(text_field) == fields.TextField
+        ), "Property `Text` Models` Comment` should be textual `TextField` "
 
-    @pytest.mark.django_db(transaction=True)
-    def test_comments_not_found(self, user_client, post):
-        response = user_client.get(f'/api/v1/posts/{post.id}/comments/')
+        pub_date_field_name = "created"
+        pub_date_field = search_field(model_fields, "pub_date")
+        if pub_date_field is not None:
+            pub_date_field_name = "pub_date"
+        else:
+            pub_date_field = search_field(model_fields, "created")
+            if pub_date_field is not None:
+                pub_date_field_name = "created"
 
-        assert response.status_code != 404, (
-            'Страница `/api/v1/posts/{post.id}/comments/` не найдена, проверьте этот адрес в *urls.py*'
-        )
+        assert (
+            pub_date_field is not None
+        ), f"Add the date and time of the event `{pub_date_field_name}` Model `Comment` "
+        assert (
+            type(pub_date_field) == fields.DateTimeField
+        ), f"Property {pub_date_field_name} `Model` Comment` should be the date and time of `DATETIMEFILD` "
+        assert (
+            pub_date_field.auto_now_add
+        ), f"Property {pub_date_field_name} `Model` Comment` should be `auto_now_add` "
 
-    @pytest.mark.django_db(transaction=True)
-    def test_comments_get(self, user_client, post, comment_1_post, comment_2_post, comment_1_another_post):
-        response = user_client.get(f'/api/v1/posts/{post.id}/comments/')
+        author_field = search_field(model_fields, "author_id")
+        assert (
+            author_field is not None
+        ), "Add a user, an author who created an event `Author` Model` Comment` "
+        assert (
+            type(author_field) == fields.related.ForeignKey
+        ), "The property of `author` Models` Comment` should be a link to another model `Foreignkey` "
+        assert (
+            author_field.related_model == get_user_model()
+        ), "Property `Author` Models` Comment` should be a link to the user model `user` "
 
-        assert response.status_code == 200, (
-            'Проверьте, что при GET запросе `/api/v1/posts/{post.id}/comments/` '
-            'с токеном авторизации возвращаетсся статус 200'
-        )
-        test_data = response.json()
-        assert type(test_data) == list, (
-            'Проверьте, что при GET запросе на `/api/v1/posts/{post.id}/comments/` возвращается список'
-        )
-        assert len(test_data) == Comment.objects.filter(post=post).count(), (
-            'Проверьте, что при GET запросе на `/api/v1/posts/{post.id}/comments/` '
-            'возвращается весь список комментов статьи'
-        )
-
-        comment = Comment.objects.filter(post=post).first()
-        test_comment = test_data[0]
-        assert 'id' in test_comment, (
-            'Проверьте, что добавили `id` в список полей `fields` сериализатора модели Comment'
-        )
-        assert 'text' in test_comment, (
-            'Проверьте, что добавили `text` в список полей `fields` сериализатора модели Comment'
-        )
-        assert 'author' in test_comment, (
-            'Проверьте, что добавили `author` в список полей `fields` сериализатора модели Comment'
-        )
-        assert 'post' in test_comment, (
-            'Проверьте, что добавили `post` в список полей `fields` сериализатора модели Comment'
-        )
-        assert 'created' in test_comment, (
-            'Проверьте, что добавили `created` в список полей `fields` сериализатора модели Comment'
-        )
-        assert test_comment['author'] == comment.author.username, (
-            'Проверьте, что `author` сериализатора модели Comment возвращает имя пользователя'
-        )
-        assert test_comment['id'] == comment.id, (
-            'Проверьте, что при GET запросе на `/api/v1/posts/{post.id}/comments/` возвращается весь список статей'
-        )
-
-    @pytest.mark.django_db(transaction=True)
-    def test_comments_create(self, user_client, post, user, another_user):
-        comments_count = Comment.objects.count()
-
-        data = {}
-        response = user_client.post(f'/api/v1/posts/{post.id}/comments/', data=data)
-        assert response.status_code == 400, (
-            'Проверьте, что при POST запросе на `/api/v1/posts/{post.id}/comments/` '
-            'с не правильными данными возвращается статус 400'
-        )
-
-        data = {'author': another_user.id, 'text': 'Новый коммент 1233', 'post': post.id}
-        response = user_client.post(f'/api/v1/posts/{post.id}/comments/', data=data)
-        assert response.status_code == 201, (
-            'Проверьте, что при POST запросе на `/api/v1/posts/{post.id}/comments/` '
-            'с правильными данными возвращается статус 201'
-        )
-
-        test_data = response.json()
-        msg_error = (
-            'Проверьте, что при POST запросе на `/api/v1/posts/{post.id}/comments/` '
-            'возвращается словарь с данными нового комментария'
-        )
-        assert type(test_data) == dict, msg_error
-        assert test_data.get('text') == data['text'], msg_error
-
-        assert test_data.get('author') == user.username, (
-            'Проверьте, что при POST запросе на `/api/v1/posts/{post.id}/comments/` '
-            'создается комментарий от авторизованного пользователя'
-        )
-        assert comments_count + 1 == Comment.objects.count(), (
-            'Проверьте, что при POST запросе на `/api/v1/posts/{post.id}/comments/` создается комментарий'
-        )
+        post_field = search_field(model_fields, "post_id")
+        assert post_field is not None, "Add the `Group` property to the` comment` "
+        assert (
+            type(post_field) == fields.related.ForeignKey
+        ), "The property of `Group` Models` Comment` should be a link to another model `Foreignkey` "
+        assert (
+            post_field.related_model == Post
+        ), "Property `Group` Model` Comment` should be a link to the `Post` model "
 
     @pytest.mark.django_db(transaction=True)
-    def test_comment_get_current(self, user_client, post, comment_1_post, user):
-        response = user_client.get(f'/api/v1/posts/{post.id}/comments/{comment_1_post.id}/')
+    def test_comment_add_view(self, client, post):
+        try:
+            response = client.get(f"/posts/{post.id}/comment")
+        except Exception as e:
+            assert (
+                False
+            ), f"""The `/posts/<Post_ID>/comment/` page works incorrectly.Error: `{e}` """
+        if (
+            response.status_code in (301, 302)
+            and response.url == f"/posts/{post.id}/comment/"
+        ):
+            url = f"/posts/{post.id}/comment/"
+        else:
+            url = f"/posts/{post.id}/comment"
+        assert (
+            response.status_code != 404
+        ), "Page `/Posts/<Post_id>/comment/` Not found, check this address in *urls.py *"
 
-        assert response.status_code == 200, (
-            'Страница `/api/v1/posts/{post.id}/comments/{comment.id}/` не найдена, '
-            'проверьте этот адрес в *urls.py*'
-        )
-
-        test_data = response.json()
-        assert test_data.get('text') == comment_1_post.text, (
-            'Проверьте, что при GET запросе `/api/v1/posts/{post.id}/comments/{comment.id}/` '
-            'возвращаете данные сериализатора, не найдено или не правильное значение `text`'
-        )
-        assert test_data.get('author') == user.username, (
-            'Проверьте, что при GET запросе `/api/v1/posts/{post.id}/comments/{comment.id}/` '
-            'возвращаете данные сериализатора, не найдено или не правильное значение `author`, '
-            'должно возвращать имя пользователя '
-        )
-        assert test_data.get('post') == post.id, (
-            'Проверьте, что при GET запросе `/api/v1/posts/{post.id}/comments/{comment.id}/` '
-            'возвращаете данные сериализатора, не найдено или не правильное значение `post`'
-        )
-
-    @pytest.mark.django_db(transaction=True)
-    def test_comment_patch_current(self, user_client, post, comment_1_post, comment_2_post):
-        response = user_client.patch(f'/api/v1/posts/{post.id}/comments/{comment_1_post.id}/',
-                                     data={'text': 'Поменяли текст коммента'})
-
-        assert response.status_code == 200, (
-            'Проверьте, что при PATCH запросе `/api/v1/posts/{post.id}/comments/{comment.id}/` '
-            'возвращаете статус 200'
-        )
-
-        test_comment = Comment.objects.filter(id=comment_1_post.id).first()
-
-        assert test_comment, (
-            'Проверьте, что при PATCH запросе `/api/v1/posts/{post.id}/comments/{comment.id}/` '
-            'вы не удалили комментарий'
-        )
-
-        assert test_comment.text == 'Поменяли текст коммента', (
-            'Проверьте, что при PATCH запросе `/api/v1/posts/{id}/` вы изменяете статью'
-        )
-
-        response = user_client.patch(f'/api/v1/posts/{post.id}/comments/{comment_2_post.id}/',
-                                     data={'text': 'Поменяли текст статьи'})
-
-        assert response.status_code == 403, (
-            'Проверьте, что при PATCH запросе `/api/v1/posts/{post.id}/comments/{comment.id}/` '
-            'для не своей статьи возвращаете статус 403'
-        )
+        response = client.post(url, data={"text": "Новый коммент!"})
+        if not (
+            response.status_code in (301, 302)
+            and response.url.startswith("/auth/login")
+        ):
+            assert False, (
+                "Check that not an authorized user "
+                "`/posts/<Post_id>/comment/` Send to the authorization page "
+            )
 
     @pytest.mark.django_db(transaction=True)
-    def test_comment_delete_current(self, user_client, post, comment_1_post, comment_2_post):
-        response = user_client.delete(f'/api/v1/posts/{post.id}/comments/{comment_1_post.id}/')
+    def test_comment_add_auth_view(self, user_client, post):
+        try:
+            response = user_client.get(f"/posts/{post.id}/comment")
+        except Exception as e:
+            assert (
+                False
+            ), f"""The `/posts/<Post_ID>/comment/` page works incorrectly.Mistake:`{e}`"""
+        if (
+            response.status_code in (301, 302)
+            and response.url == f"/posts/{post.id}/comment/"
+        ):
+            url = f"/posts/{post.id}/comment/"
+        else:
+            url = f"/posts/{post.id}/comment"
+        assert (
+            response.status_code != 404
+        ), "Page `/Posts/<Post_id>/comment/` Not found, check this address in *urls.py *"
 
-        assert response.status_code == 204, (
-            'Проверьте, что при DELETE запросе `/api/v1/posts/{post.id}/comments/{comment.id}/` возвращаете статус 204'
+        text = "New comment 94938!"
+        response = user_client.post(url, data={"text": text})
+
+        assert response.status_code in (301, 302), (
+            "Check what from the page `/posts/<Post_id>/comment/` "
+            "After creating the comment, redirect the post page "
         )
-
-        test_comment = Comment.objects.filter(id=post.id).first()
-
-        assert not test_comment, (
-            'Проверьте, что при DELETE запросе `/api/v1/posts/{post.id}/comments/{comment.id}/` вы удалили комментарий'
-        )
-
-        response = user_client.delete(f'/api/v1/posts/{post.id}/comments/{comment_2_post.id}/')
-
-        assert response.status_code == 403, (
-            'Проверьте, что при DELETE запросе `/api/v1/posts/{post.id}/comments/{comment.id}/` '
-            'для не своего комментария возвращаете статус 403'
+        comment = Comment.objects.filter(
+            text=text, post=post, author=post.author
+        ).first()
+        assert (
+            comment is not None
+        ), "Check that you are creating a new comment `/posts/<Post_id>/comment/` "
+        assert response.url.startswith(f"/posts/{post.id}"), (
+            "Check what you redirect to the post page"
+            "`/posts/<Post_id>/` after adding a new comment "
         )
