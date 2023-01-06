@@ -1,5 +1,16 @@
 # API for Bloggers Social Network
-Built on Django Rest Framework
+
+### Demo
+- Web site https://yatube.w2c.net.eu.org/
+- API https://yatube.w2c.net.eu.org/api/v1/
+- Documentation https://yatube.w2c.net.eu.org/redoc/
+
+![example workflow](https://github.com/web2cap/api_final_yatube/actions/workflows/master_yatube_workflow.yml/badge.svg)
+
+
+### Project details:
+
+Built on Django and Django Rest Framework
  
 The project allows you to view and publish author's articles, by category.
 
@@ -7,25 +18,67 @@ There is registration and authorization of users.
 
 An authorized user can leave reviews on articles and comments on reviews, subscribe to authors and manage their subscriptions.
 
-Bloggers Social Network https://github.com/web2cap/hw05_final/
+This is the final version of two projects in Docker with CI / CD deploy
+- Bloggers Social Network https://github.com/web2cap/hw05_final/
+- API for Bloggers Social Network https://github.com/web2cap/api_yatube
+Final version of this project is in Docker compose with CI/CD deploy
 
 
 ## Technology:
 
--Python and Django
+- Python and Django
 - Rest Framework
 - JWTAuthentication and djoser
+- Postgres
+- Bootstrap
+- Pytest
+- Docker and Docker compose
+- Github actions
 
-## Installation
-- Clone the repository
-- Create and activate virtual environment
-- Install all required packages from requirements.txt.
-- Apply migrations
+
+## Local installation
+- Install docker and docker compose
+```
+git clone https://github.com/web2cap/api_final_yatube.git
+cd api_final_yatube/infra
+```
+
+ - Create .env file by example:
+
+ ```
+ST_SECRET_KEY="" # Django Secret Key
+DB_ENGINE=django.db.backends.postgresql_psycopg2
+DB_NAME= # YOUR_DB_NAME
+DB_HOST=yatube_db
+DB_PORT=5432
+DB_USER= # YOUR_DB_USER
+DB_PASSWORD= # YOUR_DB_PASSWORD
+ ```
+
+```
+docker compose up -d
+docker compose exec yatube_db psql -Upostgres
+create role YOUR_DB_USER with login;
+alter role YOUR_DB_USER with encrypted password 'YOUR_DB_PASSWORD';
+alter user YOUR_DB_USER createdb;
+create database YOUR_DB_NAME owner YOUR_DB_USER;
+
+docker compose exec yatube_web python manage.py migrate
+docker compose exec yatube_web python manage.py collectstatic --no-input
+```
+
+- You can create superuser
+```
+docker compose exec yatube_web python manage.py createsuperuser
+```
+- Go to website http://localhost:800/
+
 
 ## Documentation
 When you launch the project, documentation for the Yatube API will be available at /redoc/.
 The documentation describes how your API should work.
 The documentation is in Redoc format.
+* Documentation in Russian from the customer
 
 
 ## Examples of API requests and responses:

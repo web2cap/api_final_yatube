@@ -71,8 +71,7 @@ WSGI_APPLICATION = "yatube.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": os.getenv(
-            "DB_ENGINE",
-            default="django.db.backends.postgresql_psycopg2",
+            "DB_ENGINE", default="django.db.backends.postgresql_psycopg2",
         ),
         "NAME": os.getenv("DB_NAME", default="yatube"),
         "USER": os.getenv("DB_USER", default="yatube"),

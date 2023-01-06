@@ -77,7 +77,8 @@ class Comment(models.Model):
         verbose_name="The author of the commentary",
     )
     text = models.TextField(
-        verbose_name="The text of the comment", help_text="Enter the text of the comment"
+        verbose_name="The text of the comment",
+        help_text="Enter the text of the comment",
     )
     created = models.DateTimeField(
         "date of creation", auto_now_add=True, db_index=True

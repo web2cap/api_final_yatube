@@ -6,22 +6,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('posts', '0003_auto_20230105_1523'),
+        ("posts", "0003_auto_20230105_1523"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='post',
-            options={'ordering': ('-pub_date',), 'verbose_name': 'Post', 'verbose_name_plural': 'Posts'},
+            name="post",
+            options={
+                "ordering": ("-pub_date",),
+                "verbose_name": "Post",
+                "verbose_name_plural": "Posts",
+            },
         ),
         migrations.RenameField(
-            model_name='post',
-            old_name='created',
-            new_name='pub_date',
+            model_name="post", old_name="created", new_name="pub_date",
         ),
         migrations.AlterField(
-            model_name='post',
-            name='image',
-            field=models.ImageField(blank=True, null=True, upload_to='posts/', verbose_name='Picture'),
+            model_name="post",
+            name="image",
+            field=models.ImageField(
+                blank=True, null=True,
+                upload_to="posts/",
+                verbose_name="Picture"
+            ),
         ),
     ]
