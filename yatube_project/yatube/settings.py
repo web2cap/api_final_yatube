@@ -9,7 +9,7 @@ SECRET_KEY = os.getenv(
     default="p&l%385148kslhtyn^##a1)ilz@4zqj=rq&agdol^##zgl9(vs",
 )
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["localhost", "blog.w2c.net.eu.org"]
 
