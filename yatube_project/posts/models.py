@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
 from django.db import models
-
 from core.models import CreatedModel
 
 User = get_user_model()
@@ -18,7 +17,8 @@ class Group(models.Model):
         help_text="Indicate the link to the group",
     )
     description = models.TextField(
-        verbose_name="Description", help_text="Enter the description of the group"
+        verbose_name="Description",
+        help_text="Enter the description of the group"
     )
     author = models.ForeignKey(
         User,
@@ -26,6 +26,7 @@ class Group(models.Model):
         blank=True,
         null=True,
     )
+    
     class Meta:
         verbose_name = "Group"
         verbose_name_plural = "Groups"
@@ -53,7 +54,12 @@ class Post(CreatedModel):
         verbose_name="Group",
         help_text="Choose a group",
     )
-    image = models.ImageField("Picture", upload_to="posts/", blank=True, null=True)
+    image = models.ImageField(
+        "Picture",
+        upload_to="posts/",
+        blank=True,
+        null=True
+    )
 
     class Meta:
         ordering = ("-pub_date",)
