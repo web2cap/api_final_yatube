@@ -11,14 +11,10 @@ SECRET_KEY = os.getenv(
 
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "yatube.w2c.net.eu.org"]
+ALLOWED_HOSTS = ["localhost", "blog.w2c.net.eu.org"]
 
 
 INSTALLED_APPS = [
-    # "posts.apps.PostsConfig",
-    # "users.apps.UsersConfig",
-    # "about.apps.AboutConfig",
-    # "core.apps.CoreConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
