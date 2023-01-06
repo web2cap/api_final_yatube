@@ -1,9 +1,9 @@
 # API for Bloggers Social Network
 
 ### Demo
-- Web site https://yatube.w2c.net.eu.org/
-- API https://yatube.w2c.net.eu.org/api/v1/
-- Documentation https://yatube.w2c.net.eu.org/redoc/
+- Web site https://blog.w2c.net.eu.org/
+- API https://blog.w2c.net.eu.org/api/v1/
+- Documentation https://blog.w2c.net.eu.org/redoc/
 
 ![example workflow](https://github.com/web2cap/api_final_yatube/actions/workflows/master_yatube_workflow.yml/badge.svg)
 
