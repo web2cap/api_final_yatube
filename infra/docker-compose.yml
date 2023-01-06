@@ -30,7 +30,6 @@ services:
       - static_value:/var/html/static/
       - media_value:/var/html/media/
     depends_on:
-      - yatube_api
       - yatube_web
 
 volumes:
